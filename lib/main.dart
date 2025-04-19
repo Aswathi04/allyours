@@ -47,7 +47,7 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   final List<Map<String, dynamic>> features = const [
-    {'title': 'Alarm', 'icon': Icons.alarm, 'route': '/alarm'},
+    {'title': 'Wake Up!', 'icon': Icons.alarm, 'route': '/alarm'},
     {'title': 'Calendar', 'icon': Icons.calendar_today, 'route': '/calendar'},
     {'title': 'To-Do List', 'icon': Icons.check_box, 'route': '/todo'},
     {'title': 'Chill Out', 'icon': Icons.videogame_asset, 'route': '/games'},
