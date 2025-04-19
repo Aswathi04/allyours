@@ -9,9 +9,16 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'notification_service.dart';
+import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setSystemUIOverlayStyle(
+    SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+    ),
+  );
 
   final notificationService = NotificationService();
   await notificationService.initialize();
@@ -27,7 +34,34 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'All Yours',
-      theme: ThemeData(primarySwatch: Colors.teal),
+      theme: ThemeData(
+        primarySwatch: Colors.purple,
+        colorScheme: ColorScheme.light(
+          primary: Colors.purple,
+          secondary: Colors.amber,
+          tertiary: Colors.teal,
+          background: Colors.yellow[100]!,
+        ),
+        cardTheme: CardTheme(
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+        ),
+        textTheme: GoogleFonts.comicNeueTextTheme(
+          Theme.of(context).textTheme.copyWith(
+            headlineMedium: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Colors.purple[800],
+            ),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              color: Colors.purple[900],
+            ),
+          ),
+        ),
+        scaffoldBackgroundColor: Colors.yellow[100],
+      ),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
@@ -47,12 +81,36 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   final List<Map<String, dynamic>> features = const [
-    {'title': 'Wake Up!', 'icon': Icons.alarm, 'route': '/alarm'},
-    {'title': 'Calendar', 'icon': Icons.calendar_today, 'route': '/calendar'},
-    {'title': 'To-Do List', 'icon': Icons.check_box, 'route': '/todo'},
-    {'title': 'Chill Out', 'icon': Icons.videogame_asset, 'route': '/games'},
-    {'title': 'Drawing Canvas', 'icon': Icons.brush, 'route': '/canvas'},
-     
+    {
+      'title': 'Wake Up!',
+      'icon': Icons.alarm,
+      'route': '/alarm',
+      'color': Colors.redAccent
+    },
+    {
+      'title': 'Calendar',
+      'icon': Icons.calendar_today,
+      'route': '/calendar',
+      'color': Colors.blueAccent
+    },
+    {
+      'title': 'To-Do List',
+      'icon': Icons.check_box,
+      'route': '/todo',
+      'color': Colors.greenAccent
+    },
+    {
+      'title': 'Chill Out',
+      'icon': Icons.videogame_asset,
+      'route': '/games',
+      'color': Colors.purpleAccent
+    },
+    {
+      'title': 'Drawing Canvas',
+      'icon': Icons.brush,
+      'route': '/canvas',
+      'color': Colors.orangeAccent
+    },
   ];
 
   const HomeScreen({super.key});
@@ -60,21 +118,94 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('All Yours')),
-      body: ListView.builder(
-        itemCount: features.length,
-        itemBuilder: (context, index) {
-          return Card(
-            margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: ListTile(
-              leading: Icon(features[index]['icon'], color: Colors.teal),
-              title: Text(features[index]['title']),
-              onTap: () {
-                Navigator.pushNamed(context, features[index]['route']);
-              },
-            ),
-          );
-        },
+      appBar: AppBar(
+        title: Text(
+          'All Yours',
+          style: GoogleFonts.comicNeue(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: Colors.yellow[100],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.yellow[200]!,
+              Colors.yellow[100]!,
+            ],
+          ),
+        ),
+        child: ListView.builder(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          itemCount: features.length,
+          itemBuilder: (context, index) {
+            return Hero(
+              tag: features[index]['route'],
+              child: TweenAnimationBuilder(
+                duration: Duration(milliseconds: 300 + (index * 100)),
+                tween: Tween<double>(begin: 0, end: 1),
+                builder: (context, double value, child) {
+                  return Transform.translate(
+                    offset: Offset(0, 50 * (1 - value)),
+                    child: Opacity(
+                      opacity: value,
+                      child: child,
+                    ),
+                  );
+                },
+                child: Card(
+                  margin: EdgeInsets.symmetric(vertical: 8),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(16),
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      Navigator.pushNamed(context, features[index]['route']);
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: Row(
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: features[index]['color'].withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              features[index]['icon'],
+                              color: features[index]['color'],
+                              size: 32,
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Text(
+                            features[index]['title'],
+                            style: GoogleFonts.comicNeue(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Spacer(),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            color: Colors.grey[400],
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -90,6 +221,7 @@ class TodoScreen extends StatefulWidget {
 class _TodoScreenState extends State<TodoScreen> {
   final List<String> _tasks = [];
   final TextEditingController _controller = TextEditingController();
+  final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
 
   @override
   void initState() {
@@ -101,9 +233,9 @@ class _TodoScreenState extends State<TodoScreen> {
     final prefs = await SharedPreferences.getInstance();
     final savedTasks = prefs.getStringList('todoTasks');
     if (savedTasks != null) {
-      setState(() {
-        _tasks.addAll(savedTasks);
-      });
+      for (final task in savedTasks) {
+        _tasks.add(task);
+      }
     }
   }
 
@@ -116,58 +248,155 @@ class _TodoScreenState extends State<TodoScreen> {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       setState(() {
-        _tasks.add(text);
+        _tasks.insert(0, text);
+        _listKey.currentState?.insertItem(0);
         _controller.clear();
         _saveTasks();
       });
+      HapticFeedback.mediumImpact();
     }
   }
 
   void _removeTask(int index) {
+    final removedItem = _tasks[index];
+    _listKey.currentState?.removeItem(
+      index,
+      (context, animation) => SizeTransition(
+        sizeFactor: animation,
+        child: FadeTransition(
+          opacity: animation,
+          child: _buildTaskItem(removedItem, index, animation),
+        ),
+      ),
+    );
     setState(() {
       _tasks.removeAt(index);
       _saveTasks();
     });
+    HapticFeedback.lightImpact();
+  }
+
+  Widget _buildTaskItem(String task, int index, Animation<double>? animation) {
+    return Container(
+      margin: EdgeInsets.symmetric(vertical: 4),
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: ListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: Colors.purple.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Center(
+              child: Text(
+                '${_tasks.length - index}',
+                style: TextStyle(
+                  color: Colors.purple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          title: Text(
+            task,
+            style: TextStyle(fontSize: 16),
+          ),
+          trailing: IconButton(
+            icon: Icon(Icons.delete_outline, color: Colors.red[300]),
+            onPressed: () => _removeTask(index),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('To-Do List')),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
+      appBar: AppBar(
+        title: Text('To-Do List'),
+        elevation: 0,
+      ),
+      body: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+            ),
+            child: TextField(
               controller: _controller,
               decoration: InputDecoration(
-                labelText: 'Enter a task',
+                hintText: 'Add a new task...',
+                filled: true,
+                fillColor: Colors.white,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.add),
+                  icon: Icon(Icons.add_circle, color: Colors.purple),
                   onPressed: _addTask,
                 ),
               ),
               onSubmitted: (value) => _addTask(),
             ),
-            SizedBox(height: 20),
-            Expanded(
-              child: _tasks.isEmpty
-                  ? Center(child: Text('No tasks yet.'))
-                  : ListView.builder(
-                      itemCount: _tasks.length,
-                      itemBuilder: (context, index) {
-                        return ListTile(
-                          title: Text(_tasks[index]),
-                          trailing: IconButton(
-                            icon: Icon(Icons.delete),
-                            onPressed: () => _removeTask(index),
+          ),
+          Expanded(
+            child: _tasks.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.task_alt,
+                          size: 64,
+                          color: Colors.grey[300],
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'No tasks yet!',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: Colors.grey[600],
                           ),
-                        );
-                      },
+                        ),
+                        Text(
+                          'Add your first task above',
+                          style: TextStyle(
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
                     ),
-            ),
-          ],
-        ),
+                  )
+                : AnimatedList(
+                    key: _listKey,
+                    initialItemCount: _tasks.length,
+                    padding: EdgeInsets.all(16),
+                    itemBuilder: (context, index, animation) {
+                      return SizeTransition(
+                        sizeFactor: animation,
+                        child: FadeTransition(
+                          opacity: animation,
+                          child: _buildTaskItem(_tasks[index], index, animation),
+                        ),
+                      );
+                    },
+                  ),
+          ),
+        ],
       ),
     );
   }
