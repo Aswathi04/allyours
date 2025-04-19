@@ -5,10 +5,20 @@ import 'package:allyours/memory_game_screen.dart';
 import 'package:allyours/your_blanket_screen.dart';
 import 'package:allyours/tic_tac_toe_screen.dart';
 import 'package:allyours/reaction_game_screen.dart';
-
-
-void main() => runApp(MyApp());
-
+import 'dart:async';
+import 'notification_service.dart';
+void main() async {
+  // This line is required when doing initialization work before runApp
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize the notification service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+  await notificationService.requestPermissions();
+  
+  runApp(MyApp());
+}
+ 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -38,12 +48,12 @@ class MyApp extends StatelessWidget {
 
 class HomeScreen extends StatelessWidget {
   final List<Map<String, dynamic>> features = const [
-    const {'title': 'Alarm', 'icon': Icons.alarm, 'route': '/alarm'},
-    const {'title': 'Calendar', 'icon': Icons.calendar_today, 'route': '/calendar'},
-    const {'title': 'To-Do List', 'icon': Icons.check_box, 'route': '/todo'},
-    const {'title': 'Your Blanket', 'icon': Icons.videogame_asset, 'route': '/games'},
-    const {'title': 'Drawing Canvas', 'icon': Icons.brush, 'route': '/canvas'},
-    const {'title': 'Buddy', 'icon': Icons.chat, 'route': '/buddy'},
+    {'title': 'Alarm', 'icon': Icons.alarm, 'route': '/alarm'},
+    {'title': 'Calendar', 'icon': Icons.calendar_today, 'route': '/calendar'},
+    {'title': 'To-Do List', 'icon': Icons.check_box, 'route': '/todo'},
+    {'title': 'Your Blanket', 'icon': Icons.videogame_asset, 'route': '/games'},
+    {'title': 'Drawing Canvas', 'icon': Icons.brush, 'route': '/canvas'},
+    {'title': 'Buddy', 'icon': Icons.chat, 'route': '/buddy'},
   ];
 
   const HomeScreen({super.key});
@@ -150,17 +160,107 @@ class AlarmScreen extends StatefulWidget {
 
 class _AlarmScreenState extends State<AlarmScreen> {
   TimeOfDay? _selectedTime;
+  bool _alarmActive = false;
+  Timer? _alarmTimer;
+  NotificationService _notificationService = NotificationService();
+  
+  @override
+  void initState() {
+    super.initState();
+    _initializeNotifications();
+    _loadSavedAlarm();
+  }
+  
+  Future<void> _initializeNotifications() async {
+    await _notificationService.initialize();
+    await _notificationService.requestPermissions();
+  }
+  
+  Future<void> _loadSavedAlarm() async {
+    // You could use SharedPreferences to load saved alarm time
+    // For brevity, we'll skip the implementation here
+  }
 
   Future<void> _pickTime() async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: TimeOfDay.now(),
+      initialTime: _selectedTime ?? TimeOfDay.now(),
     );
     if (picked != null) {
       setState(() {
         _selectedTime = picked;
+        _alarmActive = false;
       });
     }
+  }
+  
+  void _setAlarm() {
+    if (_selectedTime == null) return;
+    
+    final now = DateTime.now();
+    var alarmTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      _selectedTime!.hour,
+      _selectedTime!.minute,
+    );
+    
+    // If the time has already passed today, set for tomorrow
+    if (alarmTime.isBefore(now)) {
+      alarmTime = alarmTime.add(Duration(days: 1));
+    }
+    
+    final difference = alarmTime.difference(now);
+    
+    setState(() {
+      _alarmActive = true;
+      _alarmTimer?.cancel();
+      _alarmTimer = Timer(difference, _triggerAlarm);
+    });
+    
+    // Schedule the morning question notification
+    _notificationService.scheduleMorningQuestion(_selectedTime!);
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Alarm set for ${_selectedTime!.format(context)}'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+  
+  void _triggerAlarm() {
+    // In a real app, you'd play a sound here
+    _showDayModeDialog();
+  }
+  
+  void _cancelAlarm() {
+    setState(() {
+      _alarmActive = false;
+      _alarmTimer?.cancel();
+    });
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Alarm canceled'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+  
+  void _showDayModeDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => DayModeDialog(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _alarmTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -178,15 +278,59 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   : 'Alarm set for ${_selectedTime!.format(context)}',
               style: TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 8),
+            if (_alarmActive)
+              Text(
+                'Alarm active',
+                style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
+              ),
+            SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: _pickTime,
-              icon: Icon(Icons.alarm),
+              icon: Icon(Icons.access_time),
               label: Text('Pick Time'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.teal,
                 padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
                 textStyle: TextStyle(fontSize: 18),
+              ),
+            ),
+            SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton.icon(
+                  onPressed: _selectedTime != null && !_alarmActive ? _setAlarm : null,
+                  icon: Icon(Icons.alarm_on),
+                  label: Text('Set Alarm'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal,
+                    disabledBackgroundColor: Colors.grey,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
+                SizedBox(width: 16),
+                ElevatedButton.icon(
+                  onPressed: _alarmActive ? _cancelAlarm : null,
+                  icon: Icon(Icons.alarm_off),
+                  label: Text('Cancel'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                    disabledBackgroundColor: Colors.grey,
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    textStyle: TextStyle(fontSize: 18),
+                  ),
+                ),
+              ],
+            ),
+            SizedBox(height: 32),
+            // For testing purposes:
+            ElevatedButton(
+              onPressed: _showDayModeDialog,
+              child: Text('Test Day Mode Dialog'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.grey[400],
               ),
             ),
           ],
@@ -195,8 +339,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 }
-
-
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
@@ -300,6 +442,31 @@ class _CalendarScreenState extends State<CalendarScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+class DayModeDialog extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Select Day Mode'),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            title: Text('Get Shit Done'),
+            onTap: () {
+              Navigator.of(context).pop('productive');
+            },
+          ),
+          ListTile(
+            title: Text('Leave Me Alone'),
+            onTap: () {
+              Navigator.of(context).pop('relaxed');
+            },
+          ),
+        ],
       ),
     );
   }

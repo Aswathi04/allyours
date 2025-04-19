@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class YourBlanketScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> games = [
+  final List<Map<String, dynamic>> games = const[
     {'title': 'Tic Tac Toe', 'route': '/tic_tac_toe'},
     {'title': 'Memory Game', 'route': '/memory_game'},
     {'title': 'Reaction Time', 'route': '/reaction_game'},
@@ -12,7 +12,7 @@ class YourBlanketScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Your Blanket 🎮')),
+      appBar: AppBar(title: Text('Chill Out 🎮')),
       body: ListView.builder(
         itemCount: games.length,
         itemBuilder: (context, index) {
