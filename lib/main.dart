@@ -5,20 +5,21 @@ import 'package:allyours/memory_game_screen.dart';
 import 'package:allyours/your_blanket_screen.dart';
 import 'package:allyours/tic_tac_toe_screen.dart';
 import 'package:allyours/reaction_game_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'notification_service.dart';
+
 void main() async {
-  // This line is required when doing initialization work before runApp
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Initialize the notification service
+
   final notificationService = NotificationService();
   await notificationService.initialize();
   await notificationService.requestPermissions();
-  
+
   runApp(MyApp());
 }
- 
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -26,9 +27,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'All Yours',
-      theme: ThemeData(
-        primarySwatch: Colors.teal,
-      ),
+      theme: ThemeData(primarySwatch: Colors.teal),
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
@@ -51,9 +50,9 @@ class HomeScreen extends StatelessWidget {
     {'title': 'Alarm', 'icon': Icons.alarm, 'route': '/alarm'},
     {'title': 'Calendar', 'icon': Icons.calendar_today, 'route': '/calendar'},
     {'title': 'To-Do List', 'icon': Icons.check_box, 'route': '/todo'},
-    {'title': 'Your Blanket', 'icon': Icons.videogame_asset, 'route': '/games'},
+    {'title': 'Chill Out', 'icon': Icons.videogame_asset, 'route': '/games'},
     {'title': 'Drawing Canvas', 'icon': Icons.brush, 'route': '/canvas'},
-    {'title': 'Buddy', 'icon': Icons.chat, 'route': '/buddy'},
+     
   ];
 
   const HomeScreen({super.key});
@@ -92,12 +91,34 @@ class _TodoScreenState extends State<TodoScreen> {
   final List<String> _tasks = [];
   final TextEditingController _controller = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    _loadTasks();
+  }
+
+  Future<void> _loadTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedTasks = prefs.getStringList('todoTasks');
+    if (savedTasks != null) {
+      setState(() {
+        _tasks.addAll(savedTasks);
+      });
+    }
+  }
+
+  Future<void> _saveTasks() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('todoTasks', _tasks);
+  }
+
   void _addTask() {
     final text = _controller.text.trim();
     if (text.isNotEmpty) {
       setState(() {
         _tasks.add(text);
         _controller.clear();
+        _saveTasks();
       });
     }
   }
@@ -105,6 +126,7 @@ class _TodoScreenState extends State<TodoScreen> {
   void _removeTask(int index) {
     setState(() {
       _tasks.removeAt(index);
+      _saveTasks();
     });
   }
 
@@ -163,22 +185,29 @@ class _AlarmScreenState extends State<AlarmScreen> {
   bool _alarmActive = false;
   Timer? _alarmTimer;
   NotificationService _notificationService = NotificationService();
-  
+
   @override
   void initState() {
     super.initState();
     _initializeNotifications();
     _loadSavedAlarm();
   }
-  
+
   Future<void> _initializeNotifications() async {
     await _notificationService.initialize();
     await _notificationService.requestPermissions();
   }
-  
+
   Future<void> _loadSavedAlarm() async {
-    // You could use SharedPreferences to load saved alarm time
-    // For brevity, we'll skip the implementation here
+    final prefs = await SharedPreferences.getInstance();
+    final hour = prefs.getInt('alarmHour');
+    final minute = prefs.getInt('alarmMinute');
+    if (hour != null && minute != null) {
+      setState(() {
+        _selectedTime = TimeOfDay(hour: hour, minute: minute);
+        _alarmActive = true;
+      });
+    }
   }
 
   Future<void> _pickTime() async {
@@ -193,10 +222,10 @@ class _AlarmScreenState extends State<AlarmScreen> {
       });
     }
   }
-  
-  void _setAlarm() {
+
+  void _setAlarm() async {
     if (_selectedTime == null) return;
-    
+
     final now = DateTime.now();
     var alarmTime = DateTime(
       now.year,
@@ -205,23 +234,25 @@ class _AlarmScreenState extends State<AlarmScreen> {
       _selectedTime!.hour,
       _selectedTime!.minute,
     );
-    
-    // If the time has already passed today, set for tomorrow
+
     if (alarmTime.isBefore(now)) {
       alarmTime = alarmTime.add(Duration(days: 1));
     }
-    
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt('alarmHour', _selectedTime!.hour);
+    await prefs.setInt('alarmMinute', _selectedTime!.minute);
+
     final difference = alarmTime.difference(now);
-    
+
     setState(() {
       _alarmActive = true;
       _alarmTimer?.cancel();
       _alarmTimer = Timer(difference, _triggerAlarm);
     });
-    
-    // Schedule the morning question notification
+
     _notificationService.scheduleMorningQuestion(_selectedTime!);
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Alarm set for ${_selectedTime!.format(context)}'),
@@ -229,26 +260,22 @@ class _AlarmScreenState extends State<AlarmScreen> {
       ),
     );
   }
-  
+
   void _triggerAlarm() {
-    // In a real app, you'd play a sound here
     _showDayModeDialog();
   }
-  
+
   void _cancelAlarm() {
     setState(() {
       _alarmActive = false;
       _alarmTimer?.cancel();
     });
-    
+
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Alarm canceled'),
-        duration: Duration(seconds: 2),
-      ),
+      SnackBar(content: Text('Alarm canceled'), duration: Duration(seconds: 2)),
     );
   }
-  
+
   void _showDayModeDialog() {
     showDialog(
       context: context,
@@ -289,11 +316,6 @@ class _AlarmScreenState extends State<AlarmScreen> {
               onPressed: _pickTime,
               icon: Icon(Icons.access_time),
               label: Text('Pick Time'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                textStyle: TextStyle(fontSize: 18),
-              ),
             ),
             SizedBox(height: 16),
             Row(
@@ -303,35 +325,14 @@ class _AlarmScreenState extends State<AlarmScreen> {
                   onPressed: _selectedTime != null && !_alarmActive ? _setAlarm : null,
                   icon: Icon(Icons.alarm_on),
                   label: Text('Set Alarm'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    disabledBackgroundColor: Colors.grey,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    textStyle: TextStyle(fontSize: 18),
-                  ),
                 ),
                 SizedBox(width: 16),
                 ElevatedButton.icon(
                   onPressed: _alarmActive ? _cancelAlarm : null,
                   icon: Icon(Icons.alarm_off),
                   label: Text('Cancel'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    disabledBackgroundColor: Colors.grey,
-                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                    textStyle: TextStyle(fontSize: 18),
-                  ),
                 ),
               ],
-            ),
-            SizedBox(height: 32),
-            // For testing purposes:
-            ElevatedButton(
-              onPressed: _showDayModeDialog,
-              child: Text('Test Day Mode Dialog'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.grey[400],
-              ),
             ),
           ],
         ),
@@ -339,6 +340,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
   }
 }
+
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
 
@@ -349,27 +351,53 @@ class CalendarScreen extends StatefulWidget {
 class _CalendarScreenState extends State<CalendarScreen> {
   DateTime _focusedDay = DateTime.now();
   DateTime _selectedDay = DateTime.now();
-
-  final Map<DateTime, List<String>> _events = {};
   final TextEditingController _eventController = TextEditingController();
+  Map<String, List<String>> _events = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEvents();
+  }
+
+  Future<void> _loadEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    final stored = prefs.getString('calendarEvents');
+    if (stored != null) {
+      final Map<String, dynamic> decoded = jsonDecode(stored);
+      setState(() {
+        _events = decoded.map((key, value) => MapEntry(key, List<String>.from(value)));
+      });
+    }
+  }
+
+  Future<void> _saveEvents() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('calendarEvents', jsonEncode(_events));
+  }
 
   List<String> _getEventsForDay(DateTime day) {
-    return _events[DateTime(day.year, day.month, day.day)] ?? [];
+    final key = _formatDate(day);
+    return _events[key] ?? [];
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month}-${date.day}';
   }
 
   void _addEvent() {
     final eventText = _eventController.text.trim();
     if (eventText.isEmpty) return;
 
-    final eventDate = DateTime(_selectedDay.year, _selectedDay.month, _selectedDay.day);
+    final dateKey = _formatDate(_selectedDay);
     setState(() {
-      if (_events[eventDate] != null) {
-        _events[eventDate]!.add(eventText);
-      } else {
-        _events[eventDate] = [eventText];
+      if (_events[dateKey] == null) {
+        _events[dateKey] = [];
       }
+      _events[dateKey]!.add(eventText);
       _eventController.clear();
     });
+    _saveEvents();
   }
 
   @override
@@ -446,6 +474,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 }
+
 class DayModeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
