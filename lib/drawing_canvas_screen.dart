@@ -10,7 +10,7 @@ class DrawingCanvasScreen extends StatefulWidget {
 class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
   final List<Offset?> _points = [];
   Color _selectedColor = Colors.black;
-  double _strokeWidth = 4.0;
+  final double _strokeWidth = 4.0;
   
   final List<Color> _colors = [
     Colors.black,
@@ -30,10 +30,10 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Drawing Canvas'),
+        title: const Text('Drawing Canvas'),
         actions: [
           IconButton(
-            icon: Icon(Icons.clear),
+            icon: const Icon(Icons.clear),
             onPressed: () {
               setState(() {
                 _points.clear();
@@ -61,7 +61,7 @@ class _DrawingCanvasScreenState extends State<DrawingCanvasScreen> {
                   child: Container(
                     width: 40,
                     height: 40,
-                    margin: EdgeInsets.all(8),
+                    margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: _colors[index],
                       shape: BoxShape.circle,

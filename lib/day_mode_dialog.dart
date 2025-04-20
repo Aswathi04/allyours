@@ -7,7 +7,7 @@ class DayModeDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('What kind of day are you looking forward to?'),
+      title: const Text('What kind of day are you looking forward to?'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -20,14 +20,14 @@ class DayModeDialog extends StatelessWidget {
               await NotificationService().scheduleProductiveNotifications();
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text('Productive mode activated! We\'ll remind you about your tasks.'),
                   backgroundColor: Colors.teal,
                 ),
               );
             },
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           _buildOptionButton(
             context,
             'Leave me alone',
@@ -38,7 +38,7 @@ class DayModeDialog extends StatelessWidget {
               Navigator.of(context).pop();
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Relaxed mode activated. We\'ll give you some space today.'),
+                  content: const Text('Relaxed mode activated. We\'ll give you some space today.'),
                   backgroundColor: Colors.grey[700],
                 ),
               );
@@ -60,17 +60,17 @@ class DayModeDialog extends StatelessWidget {
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
         backgroundColor: color,
-        padding: EdgeInsets.symmetric(vertical: 12),
-        minimumSize: Size(double.infinity, 0),
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        minimumSize: const Size(double.infinity, 0),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Icon(icon),
-          SizedBox(width: 8),
+          const SizedBox(width: 8),
           Text(
             text,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
         ],
       ),

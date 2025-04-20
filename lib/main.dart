@@ -15,7 +15,7 @@ import 'package:google_fonts/google_fonts.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
+    const SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
     ),
   );
@@ -24,7 +24,7 @@ void main() async {
   await notificationService.initialize();
   await notificationService.requestPermissions();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
           primary: Colors.purple,
           secondary: Colors.amber,
           tertiary: Colors.teal,
-          background: Colors.yellow[100]!,
+          surface: Colors.yellow[100]!,
         ),
         cardTheme: CardTheme(
           elevation: 4,
@@ -65,15 +65,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: '/',
       routes: {
-        '/': (context) => HomeScreen(),
-        '/todo': (context) => TodoScreen(),
-        '/alarm': (context) => AlarmScreen(),
-        '/calendar': (context) => CalendarScreen(),
-        '/canvas': (context) => DrawingCanvasScreen(),
-        '/games': (context) => YourBlanketScreen(),
-        '/memory_game': (context) => MemoryGameScreen(),
-        '/tic_tac_toe': (context) => TicTacToeScreen(),
-        '/reaction_game': (context) => ReactionGameScreen(),
+        '/': (context) => const HomeScreen(),
+        '/todo': (context) => const TodoScreen(),
+        '/alarm': (context) => const AlarmScreen(),
+        '/calendar': (context) => const CalendarScreen(),
+        '/canvas': (context) => const DrawingCanvasScreen(),
+        '/games': (context) => const YourBlanketScreen(),
+        '/memory_game': (context) => const MemoryGameScreen(),
+        '/tic_tac_toe': (context) => const TicTacToeScreen(),
+        '/reaction_game': (context) => const ReactionGameScreen(),
       },
     );
   }
@@ -142,7 +142,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ),
         child: ListView.builder(
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
           itemCount: features.length,
           itemBuilder: (context, index) {
             return Hero(
@@ -160,7 +160,7 @@ class HomeScreen extends StatelessWidget {
                   );
                 },
                 child: Card(
-                  margin: EdgeInsets.symmetric(vertical: 8),
+                  margin: const EdgeInsets.symmetric(vertical: 8),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(16),
                     onTap: () {
@@ -168,11 +168,11 @@ class HomeScreen extends StatelessWidget {
                       Navigator.pushNamed(context, features[index]['route']);
                     },
                     child: Container(
-                      padding: EdgeInsets.all(20),
+                      padding: const EdgeInsets.all(20),
                       child: Row(
                         children: [
                           Container(
-                            padding: EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: features[index]['color'].withOpacity(0.1),
                               borderRadius: BorderRadius.circular(12),
@@ -183,7 +183,7 @@ class HomeScreen extends StatelessWidget {
                               size: 32,
                             ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Text(
                             features[index]['title'],
                             style: GoogleFonts.comicNeue(
@@ -191,7 +191,7 @@ class HomeScreen extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          Spacer(),
+                          const Spacer(),
                           Icon(
                             Icons.arrow_forward_ios,
                             color: Colors.grey[400],
@@ -278,14 +278,14 @@ class _TodoScreenState extends State<TodoScreen> {
 
   Widget _buildTaskItem(String task, int index, Animation<double>? animation) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 4),
+      margin: const EdgeInsets.symmetric(vertical: 4),
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         child: ListTile(
-          contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           leading: Container(
             width: 40,
             height: 40,
@@ -296,7 +296,7 @@ class _TodoScreenState extends State<TodoScreen> {
             child: Center(
               child: Text(
                 '${_tasks.length - index}',
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.purple,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
@@ -306,7 +306,7 @@ class _TodoScreenState extends State<TodoScreen> {
           ),
           title: Text(
             task,
-            style: TextStyle(fontSize: 16),
+            style: const TextStyle(fontSize: 16),
           ),
           trailing: IconButton(
             icon: Icon(Icons.delete_outline, color: Colors.red[300]),
@@ -321,16 +321,16 @@ class _TodoScreenState extends State<TodoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('To-Do List'),
+        title: const Text('To-Do List'),
         elevation: 0,
       ),
       body: Column(
         children: [
           Container(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: Theme.of(context).primaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(24),
                 bottomRight: Radius.circular(24),
               ),
@@ -346,7 +346,7 @@ class _TodoScreenState extends State<TodoScreen> {
                   borderSide: BorderSide.none,
                 ),
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.add_circle, color: Colors.purple),
+                  icon: const Icon(Icons.add_circle, color: Colors.purple),
                   onPressed: _addTask,
                 ),
               ),
@@ -364,7 +364,7 @@ class _TodoScreenState extends State<TodoScreen> {
                           size: 64,
                           color: Colors.grey[300],
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           'No tasks yet!',
                           style: TextStyle(
@@ -384,7 +384,7 @@ class _TodoScreenState extends State<TodoScreen> {
                 : AnimatedList(
                     key: _listKey,
                     initialItemCount: _tasks.length,
-                    padding: EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(16),
                     itemBuilder: (context, index, animation) {
                       return SizeTransition(
                         sizeFactor: animation,
@@ -413,7 +413,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
   TimeOfDay? _selectedTime;
   bool _alarmActive = false;
   Timer? _alarmTimer;
-  NotificationService _notificationService = NotificationService();
+  final NotificationService _notificationService = NotificationService();
 
   @override
   void initState() {
@@ -465,7 +465,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     );
 
     if (alarmTime.isBefore(now)) {
-      alarmTime = alarmTime.add(Duration(days: 1));
+      alarmTime = alarmTime.add(const Duration(days: 1));
     }
 
     final prefs = await SharedPreferences.getInstance();
@@ -485,7 +485,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Alarm set for ${_selectedTime!.format(context)}'),
-        duration: Duration(seconds: 2),
+        duration: const Duration(seconds: 2),
       ),
     );
   }
@@ -501,7 +501,7 @@ class _AlarmScreenState extends State<AlarmScreen> {
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Alarm canceled'), duration: Duration(seconds: 2)),
+      const SnackBar(content: Text('Alarm canceled'), duration: Duration(seconds: 2)),
     );
   }
 
@@ -522,9 +522,9 @@ class _AlarmScreenState extends State<AlarmScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Set Alarm')),
+      appBar: AppBar(title: const Text('Set Alarm')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -532,34 +532,34 @@ class _AlarmScreenState extends State<AlarmScreen> {
               _selectedTime == null
                   ? 'No alarm set'
                   : 'Alarm set for ${_selectedTime!.format(context)}',
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             if (_alarmActive)
-              Text(
+              const Text(
                 'Alarm active',
                 style: TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
               ),
-            SizedBox(height: 32),
+            const SizedBox(height: 32),
             ElevatedButton.icon(
               onPressed: _pickTime,
-              icon: Icon(Icons.access_time),
-              label: Text('Pick Time'),
+              icon: const Icon(Icons.access_time),
+              label: const Text('Pick Time'),
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 ElevatedButton.icon(
                   onPressed: _selectedTime != null && !_alarmActive ? _setAlarm : null,
-                  icon: Icon(Icons.alarm_on),
-                  label: Text('Set Alarm'),
+                  icon: const Icon(Icons.alarm_on),
+                  label: const Text('Set Alarm'),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 ElevatedButton.icon(
                   onPressed: _alarmActive ? _cancelAlarm : null,
-                  icon: Icon(Icons.alarm_off),
-                  label: Text('Cancel'),
+                  icon: const Icon(Icons.alarm_off),
+                  label: const Text('Cancel'),
                 ),
               ],
             ),
@@ -640,9 +640,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
     final selectedEvents = _getEventsForDay(_selectedDay);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Calendar')),
+      appBar: AppBar(title: const Text('Calendar')),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             TableCalendar(
@@ -657,7 +657,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 });
               },
               eventLoader: _getEventsForDay,
-              calendarStyle: CalendarStyle(
+              calendarStyle: const CalendarStyle(
                 todayDecoration: BoxDecoration(
                   color: Colors.tealAccent,
                   shape: BoxShape.circle,
@@ -672,22 +672,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             TextField(
               controller: _eventController,
               decoration: InputDecoration(
                 labelText: 'Add Event',
                 suffixIcon: IconButton(
-                  icon: Icon(Icons.add),
+                  icon: const Icon(Icons.add),
                   onPressed: _addEvent,
                 ),
               ),
               onSubmitted: (_) => _addEvent(),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Expanded(
               child: selectedEvents.isEmpty
-                  ? Center(child: Text('No events for this day.'))
+                  ? const Center(child: Text('No events for this day.'))
                   : ListView.builder(
                       itemCount: selectedEvents.length,
                       itemBuilder: (context, index) {
@@ -705,21 +705,23 @@ class _CalendarScreenState extends State<CalendarScreen> {
 }
 
 class DayModeDialog extends StatelessWidget {
+  const DayModeDialog({super.key});
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Select Day Mode'),
+      title: const Text('Select Day Mode'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           ListTile(
-            title: Text('Get Shit Done'),
+            title: const Text('Get Shit Done'),
             onTap: () {
               Navigator.of(context).pop('productive');
             },
           ),
           ListTile(
-            title: Text('Leave Me Alone'),
+            title: const Text('Leave Me Alone'),
             onTap: () {
               Navigator.of(context).pop('relaxed');
             },

@@ -98,7 +98,7 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Tic Tac Toe')),
+      appBar: AppBar(title: const Text('Tic Tac Toe')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -106,19 +106,19 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
             _gameOver
                 ? _winner
                 : "Player ${_currentPlayer == 1 ? 'X' : 'O'}'s turn",
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Center(
             child: Container(
-              constraints: BoxConstraints(maxWidth: 300),
+              constraints: const BoxConstraints(maxWidth: 300),
               child: AspectRatio(
                 aspectRatio: 1,
                 child: Container(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   color: Colors.teal.shade100,
                   child: GridView.builder(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
                       crossAxisSpacing: 8.0,
                       mainAxisSpacing: 8.0,
@@ -158,15 +158,15 @@ class _TicTacToeScreenState extends State<TicTacToeScreen> {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           ElevatedButton(
             onPressed: _resetGame,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
-              padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-              textStyle: TextStyle(fontSize: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+              textStyle: const TextStyle(fontSize: 18),
             ),
-            child: Text('New Game'),
+            child: const Text('New Game'),
           ),
         ],
       ),

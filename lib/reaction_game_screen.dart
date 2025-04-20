@@ -14,7 +14,7 @@ class _ReactionGameScreenState extends State<ReactionGameScreen> {
   bool _targetVisible = false;
   DateTime? _startTime;
   int _reactionTime = 0; // in milliseconds
-  List<int> _reactionTimes = [];
+  final List<int> _reactionTimes = [];
   Timer? _targetTimer;
   final Random _random = Random();
 
@@ -80,46 +80,46 @@ class _ReactionGameScreenState extends State<ReactionGameScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Reaction Time'),
+        title: const Text('Reaction Time'),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: _resetScores,
           ),
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(
+            const Text(
               'Test your reaction speed!',
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 10),
-            Text(
+            const SizedBox(height: 10),
+            const Text(
               'Tap the green target as soon as it appears.',
               style: TextStyle(fontSize: 16),
               textAlign: TextAlign.center,
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             _gameStarted
                 ? _buildGameArea()
                 : _buildResults(),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             if (!_gameStarted)
               ElevatedButton(
                 onPressed: _startGame,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.teal,
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-                  textStyle: TextStyle(fontSize: 18),
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 18),
                 ),
-                child: Text('Start Test'),
+                child: const Text('Start Test'),
               ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -152,7 +152,7 @@ class _ReactionGameScreenState extends State<ReactionGameScreen> {
               _targetVisible
                   ? 'TAP NOW!'
                   : 'Wait...',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -180,12 +180,12 @@ class _ReactionGameScreenState extends State<ReactionGameScreen> {
               _reactionTime > 0
                   ? 'Your reaction time:'
                   : 'Ready?',
-              style: TextStyle(fontSize: 20),
+              style: const TextStyle(fontSize: 20),
             ),
             if (_reactionTime > 0)
               Text(
                 '$_reactionTime ms',
-                style: TextStyle(
+                style: const TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.bold,
                   color: Colors.teal,
@@ -201,17 +201,17 @@ class _ReactionGameScreenState extends State<ReactionGameScreen> {
     return Card(
       elevation: 2,
       child: Padding(
-        padding: EdgeInsets.all(12),
+        padding: const EdgeInsets.all(12),
         child: Column(
           children: [
             Text(
               label,
               style: TextStyle(fontSize: 14, color: Colors.grey[600]),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Text(
               value,
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ],
         ),

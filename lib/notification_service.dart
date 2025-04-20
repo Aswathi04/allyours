@@ -27,7 +27,7 @@ class NotificationService {
     const AndroidInitializationSettings initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
         
-    final DarwinInitializationSettings initializationSettingsIOS =
+    const DarwinInitializationSettings initializationSettingsIOS =
         DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -86,7 +86,7 @@ class NotificationService {
     
     // If the time is already passed for today, schedule for tomorrow
     if (scheduledDate.isBefore(now)) {
-      scheduledDate = scheduledDate.add(Duration(days: 1));
+      scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
     
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -129,15 +129,15 @@ class NotificationService {
     final now = DateTime.now();
     
     // Distribute 3 notifications throughout the day
-    final notification1Time = now.add(Duration(hours: 2)); // 2 hours later
+    final notification1Time = now.add(const Duration(hours: 2)); // 2 hours later
     final notification2Time = DateTime(now.year, now.month, now.day, 13, 0); // 1:00 PM
     final notification3Time = DateTime(now.year, now.month, now.day, 16, 0); // 4:00 PM
     
     // Adjust times if they've already passed
     final List<DateTime> notificationTimes = [
-      notification1Time.isAfter(now) ? notification1Time : now.add(Duration(minutes: 30)),
-      notification2Time.isAfter(now) ? notification2Time : now.add(Duration(hours: 3)),
-      notification3Time.isAfter(now) ? notification3Time : now.add(Duration(hours: 5)),
+      notification1Time.isAfter(now) ? notification1Time : now.add(const Duration(minutes: 30)),
+      notification2Time.isAfter(now) ? notification2Time : now.add(const Duration(hours: 3)),
+      notification3Time.isAfter(now) ? notification3Time : now.add(const Duration(hours: 5)),
     ];
     
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
@@ -193,7 +193,7 @@ class NotificationService {
     
     // If 3:00 PM has already passed, schedule for 2 hours from now
     if (scheduledTime.isBefore(now)) {
-      scheduledTime = now.add(Duration(hours: 2));
+      scheduledTime = now.add(const Duration(hours: 2));
     }
     
     const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(

@@ -33,7 +33,7 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
     _score = 0;
     _seconds = 0;
     _timer?.cancel();
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       setState(() {
         _seconds++;
       });
@@ -62,7 +62,7 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
           _timer?.cancel();
         }
       } else {
-        Future.delayed(Duration(seconds: 1), () {
+        Future.delayed(const Duration(seconds: 1), () {
           setState(() {
             _revealed[_firstSelected!] = false;
             _revealed[index] = false;
@@ -89,17 +89,17 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: Text('Memory Match')),
+      appBar: AppBar(title: const Text('Memory Match')),
       body: Column(
         children: [
-          SizedBox(height: 20),
-          Text('Time: ${formatTime(_seconds)}', style: TextStyle(fontSize: 20)),
-          Text('Score: $_score', style: TextStyle(fontSize: 20)),
-          SizedBox(height: 10),
+          const SizedBox(height: 20),
+          Text('Time: ${formatTime(_seconds)}', style: const TextStyle(fontSize: 20)),
+          Text('Score: $_score', style: const TextStyle(fontSize: 20)),
+          const SizedBox(height: 10),
           Expanded(
             child: GridView.builder(
-              padding: EdgeInsets.all(16),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 4,
                 crossAxisSpacing: 10,
                 mainAxisSpacing: 10,
@@ -116,7 +116,7 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
                     child: Center(
                       child: Text(
                         _revealed[index] ? _shuffled[index] : '',
-                        style: TextStyle(fontSize: 32),
+                        style: const TextStyle(fontSize: 32),
                       ),
                     ),
                   ),
@@ -128,12 +128,12 @@ class _MemoryGameScreenState extends State<MemoryGameScreen> {
             onPressed: _startGame,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.teal,
-              padding: EdgeInsets.symmetric(horizontal: 40, vertical: 12),
-              textStyle: TextStyle(fontSize: 18),
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 12),
+              textStyle: const TextStyle(fontSize: 18),
             ),
-            child: Text('Restart'),
+            child: const Text('Restart'),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
         ],
       ),
     );
